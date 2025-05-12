@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>音频情感分析平台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet" />
+
+  <!-- Vanta.js & Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.waves.min.js"></script>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-6 relative" id="vanta-bg">
+  <div class="absolute inset-0 z-0"></div>
+
+  <div
+    class="max-w-5xl w-full bg-white/70 backdrop-blur-lg rounded-2xl shadow-xl p-8 z-10 transition duration-300 border border-white/30">
+    <h1 class="text-3xl font-extrabold text-center text-teal-600 mb-8 tracking-wide">音频文件上传与处理展示</h1>
+
+      <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <!-- 音频上传和播放 -->
+              <div>
+                <label for="audio-upload" class="block text-gray-700 font-semibold mb-2">请选择音频文件</label>
+                <input type="file" id="audio-upload" name="audio_file" accept=".mp3,.wav"
+                  class="border border-teal-300 rounded-lg p-3 w-full mb-4 focus:outline-none focus:ring-2 focus:ring-teal-400 transition bg-white/60" />
+                <audio id="audio-player" controls
+                  class="w-full h-14 rounded-lg shadow-inner border border-gray-300 bg-gray-50"></audio>
+              </div>
+          </div>
+
+          <button type="submit" style="margin-bottom: 25px"
+            class="bg-teal-500 hover:bg-teal-600 text-white font-semibold py-3 px-8 rounded-xl shadow-md transition duration-300">
+            <i class="fas fa-paper-plane mr-2"></i> 提交处理
+          </button>
+      </form>
+
+       <!-- 结果展示 -->
+      <div>
+        <label for="result-display" class="block text-gray-700 font-semibold mb-2">处理结果</label>
+        <div id="result-display" class="border border-teal-300 rounded-lg p-4 w-full h-48 overflow-auto focus:outline-none focus:ring-2 focus:ring-teal-400 transition resize-none bg-white/60 text-gray-800">
+
+            {% if results %}
+               <pre>{{ results }}</pre>
+           {% else %}
+               后端处理结果将显示在这里
+           {% endif %}
+
+           {% if filename %}
+               <p class="mt-2 text-sm text-gray-600">Processed file: {{ filename }}</p>
+           {% endif %}
+        </div>
+
+      </div>
+
+  </div>
+
+  <script>
+    // 初始化 VANTA.WAVES 背景
+    VANTA.WAVES({
+      el: "#vanta-bg",
+      mouseControls: true,
+      touchControls: true,
+      gyroControls: false,
+      minHeight: 200.00,
+      minWidth: 200.00,
+      scale: 1.0,
+      scaleMobile: 1.0,
+      color: 0x7ed6df,
+      shininess: 30.0,
+      waveHeight: 15.0,
+      waveSpeed: 0.4,
+      zoom: 0.9
+     });
+
+    const audioUpload = document.getElementById('audio-upload');
+    const audioPlayer = document.getElementById('audio-player');
+
+    if (audioUpload && audioPlayer) {
+      audioUpload.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            audioPlayer.src = e.target.result;
+            audioPlayer.style.display = 'block';
+            audioPlayer.load();
+          }
+          reader.readAsDataURL(file);
+        } else {
+           audioPlayer.src = '';
+           audioPlayer.style.display = 'none';
+        }
+      });
+    }
+
+  </script>
+</body>
+
+</html>
