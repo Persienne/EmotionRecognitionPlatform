@@ -1,0 +1,7 @@
+{
+    "last_epoch": 34,
+    "accuracy": 0.7933333333333333,
+    "version": "0.0.5",
+    "model": "BiLSTM",
+    "feature_method": "Emotion2Vec"
+}
